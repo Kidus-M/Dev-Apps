@@ -39,11 +39,14 @@ export default function SignIn() {
     );
 
     if (signInError) {
-      setError(signInError.message);
+      setError(signInError.message); // Common errors: "Invalid login credentials", "Email not confirmed"
       console.error("Sign in error:", signInError.message);
     } else if (data.user) {
-      console.log("Sign in successful, redirecting...");
-      router.push("/"); // Redirect to home page after login
+      console.log("Sign in successful, redirecting to dashboard handler...");
+      // --- UPDATED REDIRECT ---
+      // Redirect to the page that handles role-based dashboard routing
+      router.push("/dashboard-redirect");
+      // Middleware would also catch a redirect to '/', but this is more explicit.
     } else {
       setError("An unexpected error occurred. Please try again.");
     }

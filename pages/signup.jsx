@@ -11,84 +11,111 @@ import Button from '../components/Button';
 export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState(''); // <-- Username state
-  const [role, setRole] = useState(''); 
+  const [username, setUsername] = useState('');
+  const [role, setRole] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
   const router = useRouter();
 
+  // --- Added async keyword here ---
+  // Inside export default function SignUp() { ... }
+
+  // Enhanced handleSignUp with debugging
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setError(null); // Clear previous errors
+    console.log('handleSignUp called'); // <-- DEBUG 1: Is function firing?
+    setError(null);
+    setMessage(null);
 
     // --- Client-side Validation ---
     if (!role) {
+      console.log('Validation failed: Role not selected'); // <-- DEBUG 2a
       setError("Please select your role: Developer or Tester.");
       return;
     }
     if (!username || username.trim().length < 3) {
+      console.log('Validation failed: Username too short'); // <-- DEBUG 2b
       setError("Please enter a username (minimum 3 characters).");
       return;
     }
-    // Basic username format check (letters, numbers, underscores)
     if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-        setError("Username can only contain letters, numbers, and underscores (_).");
-        return;
+      console.log('Validation failed: Username format invalid'); // <-- DEBUG 2c
+      setError("Username can only contain letters, numbers, and underscores (_).");
+      return;
     }
     if (password.length < 6) {
-        setError("Password must be at least 6 characters long.");
-        return;
+      console.log('Validation failed: Password too short'); // <-- DEBUG 2d
+      setError("Password must be at least 6 characters long.");
+      return;
     }
     // --- End Validation ---
 
+    console.log('Validation passed. Setting loading...'); // <-- DEBUG 3
     setLoading(true);
-    setMessage(null);
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email: email.trim(),
-      password: password,
-      options: {
-        // --- Pass metadata for the trigger ---
-        data: {
-          username: username.trim().toLowerCase(), // Store username (lowercase recommended for consistency)
-          role: role, // Store selected role
+    try {
+      console.log('Attempting Supabase sign up...'); // <-- DEBUG 4
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: password,
+        options: {
+          data: {
+            username: username.trim().toLowerCase(),
+            role: role,
+          },
+          // emailRedirectTo: `${window.location.origin}/`,
         },
-        // emailRedirectTo: `${window.location.origin}/`, // Optional redirect
-      },
-    });
+      });
 
-    if (signUpError) {
-      // Check for specific Supabase errors
-      if (signUpError.message.toLowerCase().includes('unique constraint') && signUpError.message.includes('username')) {
-         // This error comes from the UNIQUE constraint on the profiles.username column
-         setError("Username already taken. Please choose another.");
-      } else if (signUpError.message.toLowerCase().includes('already registered') || signUpError.message.toLowerCase().includes('user already exists')) {
-         setError("An account with this email already exists. Try signing in.");
-      } else if (signUpError.message.toLowerCase().includes('check constraint') && signUpError.message.includes('username_length')) {
-          setError("Username must be at least 3 characters long."); // Corresponds to DB constraint
-      }
-      else {
-         setError(`Sign up failed: ${signUpError.message}`); // Generic Supabase error
-      }
-      console.error("Sign up error:", signUpError);
-    } else if (data.user) {
-      const needsConfirmation = data.session === null;
-      if (needsConfirmation) {
-        setMessage('Success! Please check your email to confirm your account.');
-        // Disable form, maybe clear sensitive fields like password
-         setPassword('');
+      console.log('Supabase response:', { data, signUpError }); // <-- DEBUG 5: See the result
+
+      if (signUpError) {
+        console.log('Supabase returned an error:', signUpError.message); // <-- DEBUG 6a
+        // Check for specific Supabase errors
+         if (signUpError.message.toLowerCase().includes('unique constraint') && signUpError.message.includes('username')) {
+            setError("Username already taken. Please choose another.");
+         } else if (signUpError.message.toLowerCase().includes('already registered') || signUpError.message.toLowerCase().includes('user already exists')) {
+            setError("An account with this email already exists. Try signing in.");
+         } else if (signUpError.message.toLowerCase().includes('check constraint') && signUpError.message.includes('username_length')) {
+            setError("Username must be at least 3 characters long.");
+         }
+         else {
+            setError(`Sign up failed: ${signUpError.message}`);
+         }
+         console.error("Sign up error object:", signUpError); // Log the full error object
+
+      } else if (data.user) {
+        const needsConfirmation = data.session === null;
+        if (needsConfirmation) {
+          console.log('Sign up successful, confirmation needed.'); // <-- DEBUG 6b
+          setMessage('Success! Please check your email to confirm your account.');
+          setPassword('');
+        } else {
+          console.log('Sign up successful, auto-confirmed (or user existed), redirecting...'); // <-- DEBUG 6c
+          setMessage('Account created successfully! Redirecting...');
+          router.push('/dashboard-redirect');
+        }
       } else {
-        setMessage('Account created successfully!'); // Should usually require confirmation
-        router.push('/'); // Redirect if auto-confirmed
+         // This case might indicate an issue with the response structure
+         console.warn('Supabase returned no user and no error.'); // <-- DEBUG 6d
+         setError("An unexpected response was received during sign up. Please try again.");
       }
-    } else {
-      setError("An unexpected error occurred during sign up. Please try again.");
-    }
 
-    setLoading(false);
-  };
+    } catch (err) {
+      // Catch any unexpected JS errors during the process
+      console.error("CRITICAL ERROR in handleSignUp:", err); // <-- DEBUG 7
+      setError(`An unexpected critical error occurred: ${err.message}`);
+    } finally {
+      // This block runs regardless of success or error in the try block
+      console.log('Setting loading to false.'); // <-- DEBUG 8
+      setLoading(false);
+    }
+  }; // --- End of handleSignUp function ---
+
+  // Add logs to see state values on render
+  console.log('Current state:', { loading, error, message });
 
   const pageVariants = {
     initial: { opacity: 0, y: 20 },
@@ -96,6 +123,7 @@ export default function SignUp() {
     exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: "easeIn" } }
   };
 
+  // --- Main component return statement ---
   return (
     <>
       <Head>
@@ -162,7 +190,6 @@ export default function SignUp() {
                          {roleOption.charAt(0).toUpperCase() + roleOption.slice(1)}
                        </span>
                     </div>
-                    {/* Custom radio indicator */}
                      <span className={`absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full border-2 transition-all duration-200 ${role === roleOption ? 'bg-nova-blue-500 border-white' : 'border-nova-gray-400 bg-white'}`}>
                         {role === roleOption && <span className="block w-1.5 h-1.5 bg-white rounded-full"></span>}
                     </span>
@@ -251,4 +278,4 @@ export default function SignUp() {
       </div>
     </>
   );
-}
+} // --- End of SignUp component function ---
