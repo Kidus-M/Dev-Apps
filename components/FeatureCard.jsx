@@ -1,6 +1,5 @@
 // components/FeatureCard.jsx
 import { motion } from 'framer-motion';
-// No IconType needed for JS
 
 const FeatureCard = ({ icon: Icon, title, description, className = "" }) => {
   const cardVariants = {
@@ -19,19 +18,53 @@ const FeatureCard = ({ icon: Icon, title, description, className = "" }) => {
     }
   };
 
+  // Hover variants for more interaction
+  const hoverVariants = {
+      rest: { scale: 1, boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)" }, // Softer initial shadow
+      hover: {
+          scale: 1.03,
+          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)" // Enhanced shadow
+      }
+  };
+
+  const iconVariants = {
+      rest: { rotate: 0, scale: 1 },
+      hover: { rotate: -10, scale: 1.1 } // Slight rotate and scale on hover
+  };
+
+
   return (
     <motion.div
-      className={`bg-white p-6 rounded-xl border border-nova-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 ${className}`}
+      className={`relative bg-white p-6 rounded-xl border border-nova-gray-100 overflow-hidden ${className}`} // Added relative and overflow
       initial="offscreen"
       whileInView="onscreen"
-      viewport={{ once: true, amount: 0.3 }} // Trigger animation when 30% visible
+      viewport={{ once: true, amount: 0.3 }}
       variants={cardVariants}
+      whileHover="hover" // Animate children on hover
+      animate="rest" // Ensure it returns to rest state
     >
-      <div className="mb-4 text-nova-blue-500">
-        <Icon size={32} />
+       {/* Animated Border Element */}
+      <motion.div
+        className="absolute inset-0 border-2 border-nova-blue-500 rounded-xl"
+        variants={{
+          rest: { clipPath: 'inset(100% 100% 0% 0%)' }, // Hidden initially
+          hover: { clipPath: 'inset(0% 0% 0% 0%)' }    // Reveal on hover
+        }}
+        transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }} // Smooth ease
+      />
+
+      {/* Content (relative to allow border to be behind) */}
+       <div className="relative z-10">
+          <motion.div
+              className="mb-4 text-nova-blue-500 inline-block"
+              variants={iconVariants}
+              transition={{ type: 'spring', stiffness: 300, damping: 10}}
+            >
+              <Icon size={32} />
+          </motion.div>
+          <h3 className="text-xl font-semibold text-nova-gray-800 mb-2">{title}</h3>
+          <p className="text-nova-gray-600">{description}</p>
       </div>
-      <h3 className="text-xl font-semibold text-nova-gray-800 mb-2">{title}</h3>
-      <p className="text-nova-gray-600">{description}</p>
     </motion.div>
   );
 };

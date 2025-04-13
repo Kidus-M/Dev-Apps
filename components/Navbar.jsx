@@ -1,29 +1,62 @@
 // components/Navbar.jsx
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import Button from './Button'; // Import the Button component
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
+import Button from './Button'; // Import the NEW Button component
+import { FiLogIn, FiUserPlus } from 'react-icons/fi'; // Icons for buttons
 
 const Navbar = () => {
+  const [hidden, setHidden] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const { scrollY } = useScroll();
+
+  // Detect scroll direction for hiding navbar
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious();
+    if (latest > previous && latest > 150) { // Hide when scrolling down past 150px
+        setHidden(true);
+    } else { // Show when scrolling up or near top
+        setHidden(false);
+    }
+    // Add background blur when scrolled past a small threshold
+    setScrolled(latest > 50);
+  });
+
+  const navbarVariants = {
+    visible: { y: 0, opacity: 1 },
+    hidden: { y: '-100%', opacity: 0 }
+  };
+
   return (
     <motion.nav
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sticky top-0 z-50 bg-white/80 backdrop-blur-md" // Semi-transparent background
+      variants={navbarVariants}
+      animate={hidden ? "hidden" : "visible"}
+      transition={{ duration: 0.35, ease: "easeInOut" }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
+        scrolled ? 'bg-white/90 backdrop-blur-lg shadow-sm' : 'bg-transparent'
+      }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo Placeholder */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8"> {/* Increased padding */}
+        <div className="flex justify-between items-center h-20"> {/* Increased height */}
+          {/* Logo */}
           <Link href="/" passHref legacyBehavior>
-            <a className="text-2xl font-bold text-nova-gray-800 hover:text-nova-blue-500 transition-colors">
-              NovaTest {/* Or your app name/logo */}
-            </a>
+            <motion.a
+              className="text-2xl font-bold text-nova-gray-900 transition-colors"
+              whileHover={{ scale: 1.03, color: 'var(--color-nova-blue-500)' }} // Use CSS variable if defined, else fallback
+              style={{ '--color-nova-blue-500': '#4F9FFF' }} // Provide fallback for style prop
+            >
+              DevApps
+            </motion.a>
           </Link>
 
-          {/* Navigation Links / Buttons */}
-          <div className="flex items-center space-x-4">
-            <Button href="/signin" variant="secondary">Sign In</Button>
-            <Button href="/signup" variant="primary">Sign Up</Button>
+          {/* Buttons */}
+          <div className="flex items-center space-x-3"> {/* Slightly reduced space */}
+            <Button href="/signin" variant="secondary" icon={FiLogIn} iconPosition="left">
+              Sign In
+            </Button>
+            <Button href="/signup" variant="primary" icon={FiUserPlus} iconPosition="left">
+              Sign Up
+            </Button>
           </div>
         </div>
       </div>
