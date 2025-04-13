@@ -1,0 +1,66 @@
+/* styles/globals.css */
+
+@import "tailwindcss"; /* Use this instead of the three @tailwind directives */
+
+@theme {
+  /* --- Primary Brand Color --- */
+  --color-nova-blue-50: #F0F7FF;
+  --color-nova-blue-100: #E0EFFF;
+  --color-nova-blue-200: #C4E0FF;
+  --color-nova-blue-300: #A3CDFF;
+  --color-nova-blue-400: #7AB8FF;
+  --color-nova-blue-500: #4F9FFF; /* Base Blue */
+  --color-nova-blue-600: #3B87E8;
+  --color-nova-blue-700: #2A6FCD;
+  --color-nova-blue-800: #1E58A8;
+  --color-nova-blue-900: #174583;
+  --color-nova-blue-950: #0F2C59;
+
+  /* --- Accent Color --- */
+  --color-nova-mint-50: #F0FDFA;
+  --color-nova-mint-100: #D7FBF0;
+  --color-nova-mint-200: #B3F6E3;
+  --color-nova-mint-300: #89EDD2;
+  --color-nova-mint-400: #5EE1BF;
+  --color-nova-mint-500: #3DD1A9; /* Base Mint */
+  --color-nova-mint-600: #2DB995;
+  --color-nova-mint-700: #229176;
+  --color-nova-mint-800: #1B735E;
+  --color-nova-mint-900: #165C4C;
+  --color-nova-mint-950: #0C382F;
+
+  /* --- Neutral Tones --- */
+  --color-nova-gray-50: #F8FAFC;
+  --color-nova-gray-100: #F1F5F9;
+  --color-nova-gray-200: #E2E8F0;
+  --color-nova-gray-300: #CBD5E1;
+  --color-nova-gray-400: #94A3B8;
+  --color-nova-gray-500: #64748B; /* Base Gray */
+  --color-nova-gray-600: #475569;
+  --color-nova-gray-700: #334155;
+  --color-nova-gray-800: #1E293B;
+  --color-nova-gray-900: #0F172A;
+  --color-nova-gray-950: #080C14;
+
+  /* --- Semantic Colors --- */
+  /* (Showing base and one darker shade for brevity, add more if needed) */
+  --color-nova-success-500: #22C55E; /* Base Success */
+  --color-nova-success-700: #15803D;
+
+  --color-nova-warning-500: #F59E0B; /* Base Warning */
+  --color-nova-warning-700: #B45309;
+
+  --color-nova-error-500: #EF4444; /* Base Error */
+  --color-nova-error-700: #B91C1C;
+
+  /* --- Optional Info Color --- */
+  /* (Using a default blue shade variable as an example) */
+  /* Or you can define specific shades like the others */
+  --color-nova-info-500: #3B82F6;
+
+  /* You can also define other theme variables here, like fonts or breakpoints */
+  /* --font-sans: 'Inter', sans-serif; */
+  /* --breakpoint-lg: 1024px; */
+}
+
+/* Your other global CSS rules can go here */
