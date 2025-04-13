@@ -81,7 +81,7 @@ const Navbar = () => {
         variants={navbarVariants}
         animate={hidden ? "hidden" : "visible"}
         transition={{ duration: 0.35, ease: "easeInOut" }}
-        className={`fixed top-0 left-0 right-0 z-40 ${navHeightMobile} ${navHeightDesktop} transition-colors duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-40 py-5 ${navHeightMobile} ${navHeightDesktop} transition-colors duration-300 ${
           scrolled || isMenuOpen ? 'bg-white/95 backdrop-blur-lg shadow-sm' : 'bg-transparent'
         }`}
       >
