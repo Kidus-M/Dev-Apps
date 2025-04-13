@@ -2,16 +2,15 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
-// Pass Icon component directly as prop if needed
 const Button = ({
   href,
-  variant = 'primary', // 'primary' or 'secondary'
+  variant = 'primary',
   children,
   className = '',
-  icon: Icon, // Optional icon component (e.g., from react-icons)
-  iconPosition = 'right', // 'left' or 'right'
+  icon: Icon,
+  iconPosition = 'right',
 }) => {
-  const baseStyle = "group px-6 py-2.5 rounded-full font-semibold transition-all duration-300 ease-out inline-flex items-center justify-center space-x-2 overflow-hidden relative"; // Rounded-full, added relative/overflow
+  const baseStyle = "group px-6 py-2.5 rounded-full font-semibold transition-all duration-300 ease-out inline-flex items-center justify-center space-x-2 overflow-hidden relative text-sm md:text-base"; // Adjusted padding/text size slightly
 
   const styles = {
     primary: `
@@ -22,42 +21,41 @@ const Button = ({
       hover:shadow-lg hover:shadow-nova-blue-500/40
       focus:ring-2 focus:ring-nova-blue-400 focus:ring-offset-2
     `,
+    // --- UPDATED SECONDARY HOVER ---
     secondary: `
       border-2 border-nova-blue-500
       text-nova-blue-500
       bg-transparent
-      hover:bg-gradient-to-r hover:from-nova-blue-500 hover:to-nova-blue-600
-      hover:text-white
-      hover:border-transparent
-      hover:shadow-md hover:shadow-nova-blue-500/30
+      hover:bg-nova-blue-50       /* Light background tint on hover */
+      hover:text-nova-blue-600   /* Slightly darker text on hover */
+      hover:border-nova-blue-600 /* Slightly darker border on hover */
       focus:ring-2 focus:ring-nova-blue-400 focus:ring-offset-1
     `,
   };
 
-  // Subtle animation for icon on hover
   const iconVariants = {
     rest: { x: 0, opacity: 0.8 },
-    hover: { x: iconPosition === 'right' ? 2 : -2, opacity: 1 } // Slight move
+    hover: { x: iconPosition === 'right' ? 2 : -2, opacity: 1 }
   };
 
   return (
     <Link href={href} passHref legacyBehavior>
       <motion.a
         className={`${baseStyle} ${styles[variant]} ${className}`}
-        whileHover="hover" // Trigger 'hover' variant on children
+        whileHover="hover"
         whileTap={{ scale: 0.97 }}
         initial="rest"
         animate="rest"
       >
         {Icon && iconPosition === 'left' && (
           <motion.span variants={iconVariants} transition={{ duration: 0.2 }}>
-            <Icon className="w-5 h-5" />
+            <Icon className="w-4 h-4 md:w-5 md:h-5" /> {/* Adjusted icon size */}
           </motion.span>
         )}
-        <span>{children}</span>
+        <span className="mx-1">{children}</span> {/* Added margin for spacing */}
         {Icon && iconPosition === 'right' && (
            <motion.span variants={iconVariants} transition={{ duration: 0.2 }}>
-            <Icon className="w-5 h-5" />
+            <Icon className="w-4 h-4 md:w-5 md:h-5" /> {/* Adjusted icon size */}
           </motion.span>
         )}
       </motion.a>
