@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 // --- Firebase Imports ---
-import { auth } from '@/utils/firebaseClient';
+import { auth } from '../utils/firebaseClient';
 import { verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth';
 // --- Icons ---
 import { FiLock, FiEye, FiEyeOff, FiAlertCircle, FiCheckCircle, FiKey } from 'react-icons/fi';
-import Button from '@/components/Button';
+import Button from '../components/Button';
 
 export default function ResetPassword() {
   const [oobCode, setOobCode] = useState(null); // Out Of Band code from URL

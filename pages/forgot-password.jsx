@@ -4,11 +4,11 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 // --- Firebase Imports ---
-import { auth } from '@/utils/firebaseClient'; // Use Firebase auth instance
+import { auth } from '../utils/firebaseClient'; // Use Firebase auth instance
 import { sendPasswordResetEmail } from 'firebase/auth';
 // --- Icons ---
 import { FiMail, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
-import Button from '@/components/Button';
+import Button from '../components/Button';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
