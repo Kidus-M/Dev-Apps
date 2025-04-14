@@ -5,13 +5,13 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 // --- Firebase Imports ---
-import { auth, db } from '@/utils/firebaseClient'; // Import Firebase auth & db
+import { auth, db } from '../utils/firebaseClient'; // Import Firebase auth & db
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'; // Firestore functions
 // --- Icons ---
 import { FiUser, FiUserPlus, FiMail, FiLock, FiEye, FiEyeOff, FiAlertCircle, FiUsers, FiTool } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
-import Button from '@/components/Button';
+import Button from '../components/Button';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');

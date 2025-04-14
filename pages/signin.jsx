@@ -5,12 +5,12 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 // --- Firebase Imports ---
-import { auth } from '@/utils/firebaseClient'; // Import Firebase auth instance
+import { auth } from '../utils/firebaseClient'; // Import Firebase auth instance
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 // --- Icons ---
 import { FiLogIn, FiMail, FiLock, FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
-import Button from '@/components/Button';
+import Button from '../components/Button';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
