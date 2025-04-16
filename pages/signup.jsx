@@ -26,23 +26,23 @@ export default function SignUp() {
   const router = useRouter();
 
   // --- Google Sign Up/In Handler ---
-  const handleGoogleSignUp = async () => {
-    setGoogleLoading(true);
-    setError(null);
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      console.log("Google Sign Up/In successful, user:", result.user);
-      // IMPORTANT: Profile creation for Google users needs separate handling.
-      // Typically check in dashboard-redirect or force a profile setup step.
-      // We don't collect username/role on this form for Google signup.
-      router.push('/dashboard-redirect'); // Redirect to handler page
-    } catch (err) {
-      setError(`Google Sign Up failed: ${err.message}`);
-      console.error("Google Sign Up error:", err);
-      setGoogleLoading(false);
-    }
-  };
+  // const handleGoogleSignUp = async () => {
+  //   setGoogleLoading(true);
+  //   setError(null);
+  //   const provider = new GoogleAuthProvider();
+  //   try {
+  //     const result = await signInWithPopup(auth, provider);
+  //     console.log("Google Sign Up/In successful, user:", result.user);
+  //     // IMPORTANT: Profile creation for Google users needs separate handling.
+  //     // Typically check in dashboard-redirect or force a profile setup step.
+  //     // We don't collect username/role on this form for Google signup.
+  //     router.push('/dashboard-redirect'); // Redirect to handler page
+  //   } catch (err) {
+  //     setError(`Google Sign Up failed: ${err.message}`);
+  //     console.error("Google Sign Up error:", err);
+  //     setGoogleLoading(false);
+  //   }
+  // };
 
   // --- Email/Password Sign Up Handler ---
   const handleSignUp = async (e) => {
@@ -131,7 +131,7 @@ export default function SignUp() {
           {error }
 
           {/* --- Google Sign Up Button --- */}
-           <Button
+           {/* <Button
               href="#" onClick={(e) => {e.preventDefault(); handleGoogleSignUp();}}
               variant="secondary"
               className="w-full justify-center !border-nova-gray-300 !text-nova-gray-700 hover:!bg-nova-gray-100"
@@ -139,13 +139,13 @@ export default function SignUp() {
               disabled={loading || googleLoading || message}
             >
               {googleLoading ? 'Redirecting...' : 'Sign up with Google'}
-          </Button>
+          </Button> */}
 
            {/* --- Divider --- */}
            <div className="relative my-4">
               {/* ... (Divider styling) ... */}
               <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-nova-gray-200"></div></div>
-              <div className="relative flex justify-center text-sm"><span className="px-2 bg-white text-nova-gray-500">Or sign up with email</span></div>
+              {/* <div className="relative flex justify-center text-sm"><span className="px-2 bg-white text-nova-gray-500">Or sign up with email</span></div> */}
            </div>
 
           {/* --- Email/Password Form --- */}
