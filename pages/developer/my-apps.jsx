@@ -6,6 +6,7 @@ import Link from 'next/link';
 // --- Firebase Imports ---
 import { auth, db } from '../../utils/firebaseClient';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 // --- Components & Icons ---
 import Button from '../../components/Button';
