@@ -12,7 +12,7 @@ import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import Button from '../../components/Button';
 import DeveloperLayout from '../../components/DeveloperLayout'; // Import the layout
 import AppCard from '../../components/AppCard'; // Import the new card component
-import { FiPlusSquare, FiAlertCircle } from 'react-icons/fi';
+import { FiPlusSquare, FiAlertCircle, FiPackage } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 // import { FiLoader } from 'react-icons/fi'; // Optional spinner
 
