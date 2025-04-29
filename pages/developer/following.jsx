@@ -11,7 +11,7 @@ import { collection, query, where, getDocs, orderBy, limit, startAfter, doc, get
 import Button from '../../components/Button';
 import DeveloperLayout from '../../components/DeveloperLayout';
 import UserCard from '../../components/UserCard';
-import { FiUserCheck, FiAlertCircle, FiLoader, FiSearch } from 'react-icons/fi';
+import { FiUserCheck, FiAlertCircle, FiLoader, FiSearch, FiUsers} from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 const PAGE_SIZE = 20; // How many profiles to load per batch
