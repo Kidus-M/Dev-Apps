@@ -11,9 +11,7 @@ import Navbar from '../../components/Navbar'; // Use main Navbar
 import Footer from '../../components/Footer'; // Use main Footer
 import Button from '../../components/Button';
 import AppCard from '../../components/AppCard'; // Use the updated card
-import { FiCompass, FiSearch, FiAlertCircle, FiLoader, FiGrid } from 'react-icons/fi';
-import { FiBox } from 'react-icons/fi';
-
+import { FiCompass, FiSearch, FiAlertCircle, FiLoader, FiBox } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 const BROWSE_PAGE_SIZE = 12; // Number of apps per page
@@ -159,7 +157,7 @@ export default function BrowseAppsPage() {
                     {/* Empty State (No apps found after loading) */}
                     {!loadingApps && !error && apps.length === 0 && (
                          <div className="text-center py-16 px-6 bg-white rounded-lg border border-dashed border-nova-gray-300">
-                             <FiGrid size={48} className="mx-auto text-nova-gray-400 mb-4" />
+                             <FiBox size={48} className="mx-auto text-nova-gray-400 mb-4" />
                              <h2 className="text-xl font-semibold text-nova-gray-700 mb-2">No Applications Found</h2>
                              <p className="text-nova-gray-500">Check back later or ask developers to upload their apps!</p>
                          </div>
