@@ -1,9 +1,12 @@
 // components/AppCard.jsx
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FiBox, FiTag, FiTerminal, FiEdit, FiEye, FiSmartphone, FiGlobe } from 'react-icons/fi'; // Example icons
-import Button from './Button'; // Use our Button component
-
+import { FiBox, FiTag, FiTerminal, FiEdit, FiEye, FiSmartphone, FiGlobe, FiUser } from 'react-icons/fi';
+import Button from './Button';
+// --- Firebase Imports (needed for fetching profile) ---
+import { useEffect, useState } from 'react';
+import { db } from '../utils/firebaseClient'; // Adjust path if needed
+import { doc, getDoc } from 'firebase/firestore';
 // Function to get a placeholder icon based on app type (simple example)
 const getAppTypeIcon = (type) => {
     switch (type?.toLowerCase()) {
@@ -20,9 +23,34 @@ const getAppTypeIcon = (type) => {
     }
 };
 
-const AppCard = ({ app }) => {
+const AppCard = ({ app, showDevActions = false }) => {
     // app object structure expected (adjust based on your Firestore model):
     // { id: 'firestore-doc-id', appName: '...', version: '...', status: '...', type: '...', iconUrl: '...', developerUid: '...' }
+    const [developerUsername, setDeveloperUsername] = useState('');
+    const [loadingDev, setLoadingDev] = useState(false);
+
+    useEffect(() => {
+        const fetchDeveloper = async () => {
+            if (app?.developerUid) {
+                setLoadingDev(true);
+                const profileRef = doc(db, 'profiles', app.developerUid);
+                try {
+                    const docSnap = await getDoc(profileRef);
+                    if (docSnap.exists()) {
+                        setDeveloperUsername(docSnap.data().username || `Dev-${app.developerUid.substring(0,4)}`);
+                    } else {
+                         setDeveloperUsername(`Dev-${app.developerUid.substring(0,4)}`); // Fallback
+                    }
+                } catch (error) {
+                    console.error("Error fetching developer profile for card:", error);
+                    setDeveloperUsername('Unknown Dev'); // Error state
+                } finally {
+                    setLoadingDev(false);
+                }
+            }
+        };
+        fetchDeveloper();
+    }, [app?.developerUid]); 
 
     if (!app) return null;
 
@@ -34,13 +62,14 @@ const AppCard = ({ app }) => {
     const hoverVariants = {
         hover: { scale: 1.03, transition: { duration: 0.2 } }
     };
-
+    const cardLink = showDevActions ? `/developer/apps/${app.id}/edit` : `/apps/${app.id}`;
     return (
-        <motion.div
-            variants={cardVariants} // Apply entrance variant if container uses staggerChildren
-            whileHover="hover"
-            className="bg-white rounded-lg shadow border border-nova-gray-100 overflow-hidden flex flex-col h-full group"
-        >
+        <Link href={cardLink} passHref legacyBehavior>
+             <motion.a
+                variants={cardVariants}
+                whileHover={showDevActions ? "hover" : { scale: 1.02 }} // Slightly different hover for browse?
+                className="block bg-white rounded-lg shadow border border-nova-gray-100 overflow-hidden h-full group transition-shadow hover:shadow-md" // Removed flex, added block/h-full
+             >
             {/* App Icon Placeholder/Image */}
             <div className="h-32 w-full bg-nova-gray-100 flex items-center justify-center overflow-hidden">
                 {app.iconUrl ? (
@@ -109,7 +138,8 @@ const AppCard = ({ app }) => {
                     {/* <Button variant="danger" className="!text-xs !px-3 !py-1" icon={FiTrash}>Delete</Button> */}
                 </div>
             </div>
-        </motion.div>
+            </motion.a>
+            </Link>
     );
 };
 
