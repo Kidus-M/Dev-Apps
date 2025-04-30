@@ -74,7 +74,7 @@ const DashboardSidebar = ({ onSignOut }) => { // Expect onSignOut prop for the b
                      <NavLink href="/developer/search" icon={FiSearch}>Search Users</NavLink>
                      <NavLink href="/developer/following" icon={FiUserCheck}>Following</NavLink>
                      <NavLink href="/developer/followers" icon={FiUsers}>Followers</NavLink>
-                     <NavLink href="/apps/browse" icon={FiCompass}>Explore Apps</NavLink>
+                     <NavLink href="/developer/explore-apps" icon={FiCompass}>Explore Apps</NavLink>
                      {/* <NavLink href="/blog/browse" icon={FiCompass}>Explore Posts</NavLink> */}
                  </div>
 
