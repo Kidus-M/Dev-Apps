@@ -82,7 +82,7 @@ export default function TesterDashboard() {
                     <FiCompass className="w-10 h-10 text-nova-blue-500 mx-auto mb-3"/>
                     <h2 className="text-lg font-semibold text-nova-gray-800 mb-2">Explore New Apps</h2>
                     <p className="text-sm text-nova-gray-500 mb-4">Discover the latest apps available for testing.</p>
-                     <Button href="/apps/explore" variant="primary">Browse Apps</Button>
+                     <Button href="/tester/explore-apps" variant="primary">Browse Apps</Button>
                 </div>
                  <div className="p-6 rounded-lg bg-white border border-nova-gray-200 shadow-sm text-center">
                     <FiActivity className="w-10 h-10 text-nova-mint-500 mx-auto mb-3"/>
