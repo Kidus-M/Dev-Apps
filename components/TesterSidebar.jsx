@@ -41,7 +41,7 @@ const TesterSidebar = ({ onSignOut }) => {
             {/* Navigation Sections */}
             <nav className="flex-1 px-4 py-4 space-y-2">
                 <NavLink href="/tester/dashboard" icon={FiGrid} exact={true}>Dashboard</NavLink>
-                <NavLink href="/apps/explore" icon={FiCompass}>Explore Apps</NavLink> {/* Link to shared explore page */}
+                <NavLink href="/tester/explore-apps" icon={FiCompass}>Explore Apps</NavLink> {/* Link to shared explore page */}
                 <NavLink href="/tester/my-feedback" icon={FiClipboard}>My Feedback</NavLink>
                 <NavLink href="/tester/messages" icon={FiMessageSquare}>Messages</NavLink>
                 <NavLink href="/tester/account" icon={FiUser}>Account</NavLink>
