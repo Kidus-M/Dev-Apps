@@ -1,19 +1,21 @@
 // components/TesterAppCard.jsx
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FiBox, FiUser, FiTag, FiDownload, FiExternalLink, FiMessageCircle, FiShare2, FiGlobe, FiSmartphone } from 'react-icons/fi';
-import Button from './Button';
+import {
+    FiBox, FiUser, FiTag, FiDownload, FiExternalLink,
+    FiMessageCircle, FiShare2, FiGlobe, FiSmartphone, FiPlusSquare // Added FiPlusSquare for consistency if needed
+} from 'react-icons/fi';
+import Button from './Button'; // Assuming Button component is in the same directory or correct path
 import { useEffect, useState } from 'react';
 import { db } from '../utils/firebaseClient'; // Adjust path if needed
 import { doc, getDoc } from 'firebase/firestore';
 
-// Function to get app type icon (can be shared or defined here)
+// Function to get app type icon
 const getAppTypeIcon = (type) => {
     const lowerType = type?.toLowerCase() || '';
     if (lowerType.includes('android')) return <FiSmartphone className="w-full h-full text-nova-green-500" />;
     if (lowerType.includes('ios')) return <FiSmartphone className="w-full h-full text-nova-gray-500" />;
     if (lowerType.includes('web')) return <FiGlobe className="w-full h-full text-nova-blue-500" />;
-    // Add more types as needed
     return <FiBox className="w-full h-full text-nova-purple-500" />;
 };
 
@@ -41,10 +43,10 @@ const TesterAppCard = ({ app }) => {
                 }
             }
         };
-        if (app?.developerUid) { // Check if app and developerUid exist before fetching
+        if (app?.developerUid) {
           fetchDeveloper();
         } else {
-          setDeveloperUsername('N/A'); // Handle case where app or developerUid might be missing
+          setDeveloperUsername('N/A');
         }
     }, [app?.developerUid]);
 
@@ -52,15 +54,15 @@ const TesterAppCard = ({ app }) => {
 
     const isWebApp = app.appType?.toLowerCase().includes('web');
     const primaryActionText = isWebApp ? "Visit Website" : "Download";
-    const primaryActionIcon = isWebApp ? <FiExternalLink /> : <FiDownload />;
+    // --- CORRECTED: Assign the component type, not the JSX element ---
+    const PrimaryIconComponent = isWebApp ? FiExternalLink : FiDownload;
 
     const handlePrimaryAction = (e) => {
-        // This button is not a NextLink, so stop propagation if card is wrapped in Link
         e.stopPropagation();
         if (isWebApp && app.websiteUrl) {
             window.open(app.websiteUrl, '_blank', 'noopener,noreferrer');
         } else if (!isWebApp && app.uploadUrl) {
-            window.open(app.uploadUrl, '_blank'); // Let browser handle download
+            window.open(app.uploadUrl, '_blank');
         } else {
             alert("App URL not available.");
         }
@@ -76,7 +78,6 @@ const TesterAppCard = ({ app }) => {
             variants={cardVariants}
             className="bg-white rounded-xl shadow-lg border border-nova-gray-100 overflow-hidden flex flex-col h-full group transition-all duration-300 hover:shadow-xl"
         >
-            {/* App Icon Placeholder/Image */}
             <div className="h-40 w-full bg-nova-gray-100 flex items-center justify-center overflow-hidden p-4">
                 {app.iconUrl ? (
                     <img src={app.iconUrl} alt={`${app.appName} icon`} className="max-h-full max-w-full object-contain" />
@@ -85,49 +86,42 @@ const TesterAppCard = ({ app }) => {
                 )}
             </div>
 
-            {/* App Info */}
             <div className="p-5 flex flex-col flex-grow">
                 <h3 className="text-lg font-semibold text-nova-gray-900 truncate mb-1 group-hover:text-nova-blue-700 transition-colors" title={app.appName}>
                     {app.appName || 'Untitled App'}
                 </h3>
 
-                {/* Developer Info */}
                 <p className="text-xs text-nova-gray-500 mb-3 flex items-center">
                     <FiUser className="w-3 h-3 mr-1.5 text-nova-gray-400"/>
                     {loadingDev ? '...' : (developerUsername || 'Unknown Developer')}
                 </p>
 
-                {/* Version/Type Badges */}
                 <div className="flex items-center flex-wrap gap-2 text-xs mb-4">
                     {app.version && <span className="badge-outline"><FiTag className="badge-icon" /> v{app.version}</span>}
                     {app.appType && <span className="badge-outline capitalize">{app.appType}</span>}
                 </div>
 
-                {/* Placeholder for a short description or tagline if available */}
-                {/* <p className="text-sm text-nova-gray-600 mb-4 line-clamp-2">{app.shortDescription || "No description."}</p> */}
-
-                {/* Actions Area - Pushed to the bottom */}
                 <div className="mt-auto space-y-2 pt-3">
                     <Button
                         onClick={handlePrimaryAction}
                         variant="primary"
                         className="w-full !font-medium"
-                        icon={primaryActionIcon}
+                        // --- CORRECTED: Pass the component type ---
+                        icon={PrimaryIconComponent}
                         iconPosition="left"
                     >
                         {primaryActionText}
                     </Button>
                     <Button
-                        href={`/apps/${app.id}`} // Link to the app detail page
+                        href={`/apps/${app.id}`}
                         variant="secondary"
                         className="w-full !font-medium"
-                        icon={<FiMessageCircle />}
+                        // --- CORRECTED: Pass the component type ---
+                        icon={FiMessageCircle}
                         iconPosition="left"
                     >
                         View Details & Feedback
                     </Button>
-                    {/* Optional Share Button Placeholder */}
-                    {/* <Button variant="text" className="w-full !text-xs" icon={<FiShare2/>}>Share</Button> */}
                 </div>
             </div>
             <style jsx>{`
