@@ -48,7 +48,7 @@ const DashboardSidebar = ({ onSignOut }) => { // Expect onSignOut prop for the b
     return (
         <div className="h-full w-full bg-gradient-to-b from-nova-gray-900 to-nova-gray-950 text-white flex flex-col overflow-y-auto"> {/* Added subtle gradient */}
             {/* Logo/Brand */}
-             <div className="h-16 sm:h-20 flex items-center justify-start px-6 flex-shrink-0"> {/* Match Navbar height */}
+             <div className="h-12 sm:h-20 flex items-center justify-start px-6 flex-shrink-0"> {/* Match Navbar height */}
                  <Link href="/" passHref legacyBehavior>
                     <a className="text-2xl font-bold text-white hover:opacity-80 transition-opacity">
                         DevApps
@@ -57,7 +57,7 @@ const DashboardSidebar = ({ onSignOut }) => { // Expect onSignOut prop for the b
             </div>
 
             {/* Navigation Sections */}
-            <nav className="flex-1 px-4 py-4 space-y-4">
+            <nav className="flex-1 px-4 py-1 space-y-1">
 
                  {/* Core & Content Section */}
                  <div className="space-y-1">
@@ -95,7 +95,7 @@ const DashboardSidebar = ({ onSignOut }) => { // Expect onSignOut prop for the b
             </nav>
 
             {/* Account & Sign Out at the bottom */}
-            <div className="px-4 pb-4 pt-4 border-t border-nova-gray-700/50 space-y-1 mt-auto flex-shrink-0">
+            <div className="px-4 pb-2 pt-2 border-t border-nova-gray-700/50 space-y-1 mt-auto flex-shrink-0">
                 <NavLink href="/developer/account" icon={FiUser}>Account Settings</NavLink>
                  <button
                      onClick={onSignOut} // Use the passed function
