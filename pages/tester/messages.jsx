@@ -9,9 +9,8 @@ import { doc, getDoc } from 'firebase/firestore';
 // --- Layout & Components ---
 import TesterLayout from '../../components/TesterLayout'; // Use TesterLayout
 import ChatListSidebar from '../../components/ChatListSidebar';
+import ChatWindow from '../../components/ChatWindow'; // Import the ChatWindow
 import { FiMessageSquare, FiLoader, FiAlertCircle } from 'react-icons/fi';
-// Placeholder for the actual chat window component
-// import ChatWindow from '../../components/ChatWindow';
 
 export default function TesterMessagesPage() {
     const [user, setUser] = useState(null);
@@ -34,7 +33,7 @@ export default function TesterMessagesPage() {
                         const profileData = profileSnap.data();
                         setProfile(profileData);
                         if (profileData.role !== 'tester') {
-                            console.warn("Messages: User is not a tester. Redirecting.");
+                            console.warn("Tester Messages: User is not a tester. Redirecting.");
                             router.replace(profileData.role === 'developer' ? '/developer/dashboard' : '/');
                             return;
                         }
@@ -46,9 +45,9 @@ export default function TesterMessagesPage() {
                         return;
                     }
                 } catch (err) {
-                    console.error("Error fetching profile for messages:", err);
+                    console.error("Error fetching profile for tester messages:", err);
                     setError("Failed to verify user profile.");
-                    await auth.signOut();
+                    await auth.signOut(); // Sign out on critical profile error
                     router.replace('/signin');
                     return;
                 }
@@ -66,14 +65,13 @@ export default function TesterMessagesPage() {
     const handleSelectChat = (chatId) => {
         console.log("Tester Messages: Selected chat ID:", chatId);
         setSelectedChatId(chatId);
-        // When ChatWindow is built, selecting a chat will cause it to load messages for that chatId
     };
 
     // --- Render Logic ---
     if (loadingUser) {
         return (
             <TesterLayout>
-                <div className="flex justify-center items-center h-[calc(100vh-theme(space.20))]">
+                <div className="flex justify-center items-center h-[calc(100vh-theme(space.20))]"> {/* Adjust calc for your header height */}
                     <FiLoader className="animate-spin text-nova-blue-500 text-3xl" />
                 </div>
             </TesterLayout>
@@ -95,13 +93,12 @@ export default function TesterMessagesPage() {
         );
     }
 
-    if (!user || !profile) return null; // Should be redirected by useEffect
+    if (!user || !profile) return null; // Should have been redirected by useEffect
 
     return (
         <TesterLayout>
             <Head><title>Messages - DevApps Tester</title></Head>
 
-            {/* Main two-pane chat layout */}
             <div className="flex h-[calc(100vh-var(--header-height,theme(space.20)))]"> {/* Adjust calc based on actual TesterLayout header/padding */}
 
                 {/* Chat List Sidebar */}
@@ -113,24 +110,15 @@ export default function TesterMessagesPage() {
                     />
                 </div>
 
-                {/* Chat Window Area (Placeholder) */}
-                <div className="flex-1 h-full bg-nova-gray-50 flex items-center justify-center border-l border-nova-gray-200">
-                    {selectedChatId ? (
-                        <div className="text-center">
-                            {/* Replace with <ChatWindow chatId={selectedChatId} currentUser={user} /> when ready */}
-                            <FiMessageSquare size={32} className="mx-auto mb-2 text-nova-gray-400"/>
-                            <h2 className="text-lg font-medium text-nova-gray-700">
-                                Chat: <span className="font-semibold text-nova-blue-600">{selectedChatId.substring(0,10)}...</span>
-                            </h2>
-                            <p className="text-nova-gray-500 text-sm">
-                                Chat window component coming soon!
-                            </p>
-                        </div>
+                {/* Chat Window Area */}
+                <div className="flex-1 h-full border-l border-nova-gray-200 dark:border-nova-gray-700 overflow-hidden">
+                    {selectedChatId && user ? (
+                         <ChatWindow chatId={selectedChatId} currentUser={user} />
                     ) : (
-                        <div className="text-center text-nova-gray-500">
-                            <FiMessageSquare size={48} className="mx-auto mb-4 opacity-50"/>
-                            <p>Select a conversation from the sidebar to start messaging.</p>
-                            <p className="text-xs mt-1">Or, click the 'New Chat' icon to find someone.</p>
+                        <div className="flex flex-col items-center justify-center h-full text-center text-nova-gray-500 dark:text-nova-gray-400 p-4">
+                            <FiMessageSquare size={48} className="mx-auto mb-4 opacity-40"/>
+                            <p className="text-md">Select a conversation to start messaging.</p>
+                            <p className="text-xs mt-1">Or, click the 'New Chat' icon in the sidebar.</p>
                         </div>
                      )}
                 </div>
