@@ -9,17 +9,17 @@ import {
     collection, query, where, getDocs, limit, doc, getDoc, orderBy
 } from 'firebase/firestore';
 import {
-    ref as rtdbRef, get as rtdbGet, update as rtdbUpdate, serverTimestamp as rtdbServerTimestamp // Use RTDB server timestamp
+    ref as rtdbRef, get as rtdbGet, update as rtdbUpdate, serverTimestamp as rtdbServerTimestamp
 } from 'firebase/database';
 import { useDebounce } from 'use-debounce';
 
 const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearchTerm] = useDebounce(searchTerm, 400);
-    const [searchResults, setSearchResults] = useState([]); // Profiles from Firestore
+    const [searchResults, setSearchResults] = useState([]);
     const [loadingSearch, setLoadingSearch] = useState(false);
     const [searchError, setSearchError] = useState(null);
-    const [isCreatingChat, setIsCreatingChat] = useState(false);
+    const [isCreatingChat, setIsCreatingChat] = useState(false); // This state controls the loading for chat creation
     const [currentUserProfile, setCurrentUserProfile] = useState(null);
 
     // Fetch current user's profile once for denormalization
@@ -44,36 +44,33 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
         const performSearch = async () => {
             if (debouncedSearchTerm.trim().length < 2) {
                 setSearchResults([]);
-                setSearchError(null);
+                setSearchError(null); // Clear error if search term is too short
                 return;
             }
             if (!currentUserId) {
-                setSearchError("Cannot search without current user context.");
+                setSearchError("Cannot search: Current user context is missing.");
                 return;
             }
 
             setLoadingSearch(true);
             setSearchError(null);
             try {
-                const searchTermVal = debouncedSearchTerm.trim(); // No toLowerCase here if searching 'username' directly
+                const searchTermVal = debouncedSearchTerm.trim();
                 const profilesRef = collection(db, "profiles");
-
-                // Querying directly on 'username' for prefix match (case-sensitive)
-                // For case-insensitive, you'd ideally query a 'username_lowercase' field.
                 const q = query(
                     profilesRef,
                     where('username', '>=', searchTermVal),
-                    where('username', '<', searchTermVal + '\uf8ff'), // Suffix for prefix search
-                    orderBy('username'), // Order by username
+                    where('username', '<', searchTermVal + '\uf8ff'),
+                    orderBy('username'),
                     limit(10)
                 );
                 const querySnapshot = await getDocs(q);
                 const results = querySnapshot.docs
                     .map(docData => ({ uid: docData.id, ...docData.data() }))
-                    .filter(profile => profile.uid !== currentUserId); // Exclude self
+                    .filter(profile => profile.uid !== currentUserId);
 
                 setSearchResults(results);
-                if (results.length === 0) {
+                if (results.length === 0 && searchTermVal.length >= 2) { // Only show "no users found" if search was actually performed
                     setSearchError(`No users found starting with "${searchTermVal}".`);
                 }
             } catch (err) {
@@ -88,7 +85,7 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
             }
         };
 
-        if (isOpen && currentUserId) { // Only search if modal is open and currentUserId is available
+        if (isOpen && currentUserId) {
             performSearch();
         }
     }, [debouncedSearchTerm, currentUserId, isOpen]);
@@ -101,10 +98,10 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
         if (isCreatingChat) return;
 
         setIsCreatingChat(true);
-        setSearchError(null);
+        setSearchError(null); // Clear previous search errors
 
         const otherUserId = selectedUser.uid;
-        const chatTimestamp = rtdbServerTimestamp(); // Use RTDB's server timestamp
+        const chatTimestamp = rtdbServerTimestamp();
 
         const chatId = currentUserId < otherUserId
             ? `${currentUserId}_${otherUserId}`
@@ -126,7 +123,7 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
                 createdAt: chatTimestamp,
                 lastMessageTimestamp: chatTimestamp,
                 lastMessageSnippet: "Chat created",
-                lastMessageSenderUid: null,
+                lastMessageSenderUid: null, // No messages yet, so no sender for the "last message"
             };
 
             const currentUserChatEntry = {
@@ -135,6 +132,7 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
                 otherUserAvatar: selectedUser.avatarUrl || null,
                 lastMessageTimestamp: chatTimestamp,
                 lastMessageSnippet: "Chat created",
+                lastMessageSenderUid: null,
             };
 
             const otherUserChatEntry = {
@@ -143,6 +141,7 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
                 otherUserAvatar: currentUserProfile.avatarUrl || null,
                 lastMessageTimestamp: chatTimestamp,
                 lastMessageSnippet: "Chat created",
+                lastMessageSenderUid: null,
             };
 
             const updates = {};
@@ -171,7 +170,12 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
         onClose();
     };
 
-    const modalVariants = { /* ... (same as before) ... */ };
+    const modalVariants = {
+        hidden: { opacity: 0, scale: 0.9 },
+        visible: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } }
+    };
+
 
     if (!isOpen) return null;
 
@@ -185,11 +189,11 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
                 >
                     <motion.div
                         variants={modalVariants}
-                        className="bg-white dark:bg-nova-gray-800 rounded-xl shadow-xl p-6 w-full max-w-md relative" // Added rounded-xl
+                        className="bg-white dark:bg-nova-gray-800 rounded-xl shadow-xl p-6 w-full max-w-md relative"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button onClick={handleClose} className="absolute top-4 right-4 text-nova-gray-400 hover:text-nova-gray-600 dark:hover:text-nova-gray-200 transition-colors" title="Close">
-                            <FiX size={22} /> {/* Slightly larger close icon */}
+                            <FiX size={22} />
                         </button>
 
                         <h2 className="text-xl font-semibold text-nova-gray-900 dark:text-white mb-5">Start a New Chat</h2>
@@ -206,13 +210,13 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
                             />
                         </div>
 
-                        <div className="min-h-[200px] max-h-[calc(60vh-150px)] sm:max-h-[300px] overflow-y-auto pr-1 space-y-1"> {/* Adjusted height and spacing */}
+                        <div className="min-h-[200px] max-h-[calc(60vh-150px)] sm:max-h-[300px] overflow-y-auto pr-1 space-y-1">
                             {loadingSearch && (
                                 <div className="flex justify-center items-center py-8">
                                     <FiLoader className="animate-spin text-nova-blue-500 text-2xl" />
                                 </div>
                             )}
-                            {!loadingSearch && searchError && !isCreatingChat && ( // Hide search error when creating chat
+                            {!loadingSearch && searchError && !isCreatingChat && (
                                 <div className="p-3 text-center text-sm text-nova-error-600 dark:text-nova-error-400 bg-nova-error-50 dark:bg-nova-error-800/30 rounded-md flex items-center justify-center">
                                     <FiAlertCircle className="inline w-5 h-5 mr-2 flex-shrink-0"/> {searchError}
                                 </div>
@@ -220,7 +224,7 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
                             {!loadingSearch && !searchError && debouncedSearchTerm.length >=2 && searchResults.length === 0 && (
                                 <p className="text-sm text-nova-gray-500 dark:text-nova-gray-400 text-center py-8">No users found matching "{debouncedSearchTerm}".</p>
                             )}
-                             {!loadingSearch && !searchError && debouncedSearchTerm.length < 2 && searchResults.length === 0 && ( // Show this only if no results and search term is short
+                             {!loadingSearch && !searchError && debouncedSearchTerm.length < 2 && searchResults.length === 0 && (
                                 <p className="text-sm text-nova-gray-500 dark:text-nova-gray-400 text-center py-8">Enter at least 2 characters to search users.</p>
                             )}
 
@@ -242,13 +246,19 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
                                             </div>
                                             <Button
                                                 size="sm"
-                                                variant="secondary" // Consider a specific "chat" or "add" variant
+                                                variant="secondary"
                                                 onClick={() => handleSelectUser(profile)}
-                                                disabled={isCreatingChat}
-                                                isLoading={isCreatingChat && updatingFollow.has(profile.uid)} // Assuming updatingFollow exists or use a dedicated state
+                                                disabled={isCreatingChat} // Disable all chat buttons when one is being created
+                                                // --- CORRECTED ---
+                                                // The isLoading prop for the Button component should reflect the 'isCreatingChat' state.
+                                                // If your Button component changes its appearance based on `isLoading` (e.g., shows a spinner),
+                                                // this is how you'd use it. The `icon` prop will also change.
+                                                isLoading={isCreatingChat}
                                                 icon={isCreatingChat ? FiLoader : FiUserPlus}
                                                 className="dark:bg-nova-gray-600 dark:hover:bg-nova-gray-500 dark:text-nova-gray-100 dark:border-nova-gray-500"
-                                                // iconClassName={isCreatingChat ? "animate-spin" : ""} // Handled by isLoading prop if Button supports it
+                                                // iconClassName prop is often used if the Button component doesn't handle the spinner logic itself
+                                                // For example, if isLoading just disables and you need to animate the icon:
+                                                // iconClassName={isCreatingChat ? "animate-spin" : ""}
                                             >
                                                 {isCreatingChat ? 'Starting...' : 'Chat'}
                                             </Button>
@@ -257,7 +267,11 @@ const NewChatModal = ({ isOpen, onClose, currentUserId, onChatStarted }) => {
                                 </ul>
                             )}
                         </div>
-                        {isCreatingChat && <p className="text-xs text-center text-nova-blue-600 dark:text-nova-blue-400 mt-3 flex items-center justify-center"><FiLoader className="animate-spin w-3 h-3 mr-1.5"/> Starting chat...</p>}
+                        {isCreatingChat && (
+                            <p className="text-xs text-center text-nova-blue-600 dark:text-nova-blue-400 mt-3 flex items-center justify-center">
+                                <FiLoader className="animate-spin w-3 h-3 mr-1.5"/> Starting chat...
+                            </p>
+                        )}
                     </motion.div>
                 </motion.div>
             )}
